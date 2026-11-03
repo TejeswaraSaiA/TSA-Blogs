@@ -36,7 +36,13 @@ jobs:
           fi
       - run: npm ci
       - run: npm test
-      - run: npm run build
+      - name: Build with resolved backend configuration
+        run: |
+          # Empty repository variables must not override .env.production.
+          if [ -z "$VITE_SUPABASE_URL" ]; then unset VITE_SUPABASE_URL; fi
+          if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then unset VITE_SUPABASE_ANON_KEY; fi
+          npm run build
+          node scripts/check-production-config.mjs
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
