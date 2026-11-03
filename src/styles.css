@@ -2119,7 +2119,7 @@ a svg {
     scroll-behavior: auto !important;
   }
 }
-/* Inkstone / orbital edition. Theme tokens cover the journal and studio. */
+/* TS Writes / orbital edition. Theme tokens cover the journal and studio. */
 :root {
   --font-display: "Sora", sans-serif;
   --font-body: "DM Sans", sans-serif;
@@ -4125,4 +4125,368 @@ a:hover {
   height: 36px;
   min-width: 36px;
   align-self: center;
+}
+/* TS Writes identity and the interactive published-story orbit. */
+.ts-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  white-space: nowrap;
+  letter-spacing: -1px;
+}
+.ts-brand .brand-icon {
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.ts-brand .ts-mark {
+  width: 27px;
+  height: 27px;
+}
+.site-header .ts-brand {
+  font-size: 25px;
+}
+.site-footer .ts-brand {
+  font-size: 19px;
+  gap: 9px;
+}
+.site-footer .ts-brand .brand-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+}
+.site-footer .ts-mark {
+  width: 22px;
+  height: 22px;
+}
+.studio-sidebar .ts-brand {
+  font-size: 23px;
+}
+.studio-sidebar .ts-brand .brand-icon {
+  width: 34px;
+  height: 34px;
+}
+.site-footer > div {
+  gap: 14px;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.site-footer > div > span {
+  font-size: 9px;
+}
+.site-footer > span {
+  max-width: 210px;
+  text-align: center;
+  line-height: 1.8;
+}
+.closing-note h2 {
+  font: 500 30px/1.4 var(--font-display);
+  letter-spacing: -1px;
+  margin: 20px 0 16px;
+}
+.closing-note > p {
+  font: 400 13px/1.9 var(--font-body);
+  letter-spacing: 0;
+  color: var(--soft);
+  max-width: 610px;
+  margin: 0 auto;
+}
+.closing-note > .ts-mark {
+  color: var(--accent);
+  margin-bottom: 0;
+}
+.journal-hero h1 {
+  font-size: clamp(40px, 4.15vw, 58px);
+  max-width: 650px;
+  letter-spacing: -2.4px;
+  line-height: 1.17;
+}
+.journal-hero > p {
+  max-width: 540px;
+}
+.journal-hero {
+  min-height: 550px;
+}
+.journal-hero h1,
+.journal-hero > p,
+.hero-signature,
+.hero-label {
+  pointer-events: none;
+}
+.interactive-orbit {
+  pointer-events: auto;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--ink);
+  border-radius: 35%;
+  -webkit-tap-highlight-color: transparent;
+  outline-offset: -25px;
+  z-index: 0;
+}
+.interactive-orbit:focus-visible {
+  outline: 1px dashed var(--accent);
+}
+.interactive-orbit .orbital-sphere {
+  animation: ts-sphere-turn 45s linear infinite;
+  transition:
+    opacity 0.65s,
+    scale 0.65s;
+}
+.interactive-orbit .orbital-sphere:before {
+  animation: ts-meridians 15s linear infinite;
+}
+.interactive-orbit .orbital-ring {
+  transition:
+    width 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+    height 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+    left 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+    top 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.85s cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 0.65s,
+    box-shadow 0.65s;
+}
+.interactive-orbit .orbit-point {
+  transition:
+    opacity 0.35s,
+    transform 0.7s;
+}
+.interactive-orbit .orbital-caption {
+  transition: opacity 0.4s;
+  right: 70px;
+  bottom: 30px;
+  text-align: right;
+  line-height: 1.6;
+}
+.interactive-orbit .orbital-caption > span {
+  font-size: 7px;
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+.orbital-count {
+  position: absolute;
+  left: 112px;
+  top: 58px;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 0.55s 0.12s,
+    transform 0.7s;
+  pointer-events: none;
+}
+.orbital-count > strong {
+  font: 500 100px/1.2 var(--font-display);
+  letter-spacing: -7px;
+  color: var(--ink);
+  text-shadow: 0 0 35px var(--glow);
+}
+.count-kicker,
+.count-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+.count-kicker {
+  margin-bottom: 10px;
+}
+.count-label {
+  color: var(--mint);
+  margin-top: 10px;
+}
+.interactive-orbit:is(:hover, :focus-visible, .is-revealed) .orbital-sphere {
+  opacity: 0.18;
+  scale: 0.82;
+  animation-play-state: paused;
+}
+.interactive-orbit:is(:hover, :focus-visible, .is-revealed) .orbital-ring {
+  transform: rotate(0);
+  border-color: var(--accent);
+  box-shadow: 0 0 25px var(--glow);
+}
+.interactive-orbit:is(:hover, :focus-visible, .is-revealed) .ring-one {
+  left: 132px;
+  top: 78px;
+  width: 260px;
+  height: 260px;
+}
+.interactive-orbit:is(:hover, :focus-visible, .is-revealed) .ring-two {
+  left: 112px;
+  top: 58px;
+  width: 300px;
+  height: 300px;
+  border-color: var(--mint);
+}
+.interactive-orbit:is(:hover, :focus-visible, .is-revealed) .ring-three {
+  left: 92px;
+  top: 38px;
+  width: 340px;
+  height: 340px;
+  border-color: var(--line);
+}
+.interactive-orbit:is(:hover, :focus-visible, .is-revealed) .orbital-count {
+  opacity: 1;
+  transform: scale(1);
+}
+.interactive-orbit:is(:hover, :focus-visible, .is-revealed) .orbit-point {
+  opacity: 0;
+  transform: scale(0.3);
+}
+@keyframes ts-sphere-turn {
+  from {
+    transform: rotate(-20deg);
+  }
+  to {
+    transform: rotate(340deg);
+  }
+}
+@keyframes ts-meridians {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 130px;
+  }
+}
+@media (min-width: 1500px) {
+  .journal-hero h1 {
+    font-size: 62px;
+    max-width: 700px;
+  }
+}
+@media (max-width: 1100px) and (min-width: 721px) {
+  .journal-hero h1 {
+    max-width: 560px;
+    font-size: 49px;
+  }
+  .journal-hero > p {
+    max-width: 440px;
+  }
+  .interactive-orbit {
+    right: -180px;
+  }
+}
+@media (max-width: 720px) {
+  .site-header .ts-brand {
+    font-size: 21px;
+    gap: 8px;
+  }
+  .site-header .ts-brand .brand-icon {
+    width: 31px;
+    height: 31px;
+    border-radius: 9px;
+  }
+  .site-header .ts-brand .ts-mark {
+    width: 24px;
+    height: 24px;
+  }
+  .journal-hero {
+    min-height: 725px;
+    padding-bottom: 290px;
+  }
+  .journal-hero h1 {
+    font-size: 43px;
+    letter-spacing: -1.8px;
+    max-width: 510px;
+    line-height: 1.2;
+  }
+  .journal-hero > p {
+    font-size: 12px;
+    max-width: 450px;
+  }
+  .interactive-orbit {
+    bottom: -15px;
+  }
+  .interactive-orbit .orbital-caption {
+    bottom: 37px;
+  }
+  .closing-note h2 {
+    font-size: 25px;
+    letter-spacing: -0.7px;
+  }
+  .closing-note > p {
+    font-size: 12px;
+    max-width: 450px;
+  }
+  .site-footer {
+    gap: 24px;
+  }
+  .site-footer > span {
+    display: block;
+    text-align: left;
+    font-size: 10px;
+    max-width: none;
+    order: 3;
+    width: 100%;
+  }
+  .site-footer .studio-link {
+    font-size: 10px;
+  }
+  .site-footer > div > span {
+    line-height: 1.9;
+    max-width: 250px;
+  }
+  .studio-sidebar .ts-brand {
+    font-size: 24px;
+  }
+}
+@media (max-width: 430px) {
+  .site-header nav {
+    gap: 10px;
+  }
+  .site-header .ts-brand {
+    font-size: 19px;
+    gap: 7px;
+  }
+  .site-header .ts-brand .brand-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .journal-hero h1 {
+    font-size: 37px;
+    letter-spacing: -1.6px;
+  }
+  .journal-hero {
+    min-height: 700px;
+  }
+  .interactive-orbit {
+    right: -45px;
+    bottom: 0;
+  }
+  .site-footer .studio-link {
+    margin-left: 0;
+  }
+  .site-footer > div > span {
+    font-size: 8px;
+  }
+  .closing-note h2 {
+    font-size: 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .interactive-orbit .orbital-sphere,
+  .interactive-orbit .orbital-sphere:before {
+    animation: none;
+  }
+  .interactive-orbit * {
+    transition: none !important;
+  }
+}
+/* Prevent keyboard focus on the cropped orbit from scrolling the hero sideways. */
+.journal-hero {
+  overflow: clip;
+}
+@media (min-width: 1101px) {
+  .interactive-orbit {
+    right: 0;
+    width: 520px;
+  }
 }

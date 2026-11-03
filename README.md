@@ -1,4 +1,4 @@
-# Inkstone — your personal publishing studio
+# TS Writes — your personal publishing studio
 
 A React + TypeScript blog with a separate administrator workspace. GitHub Pages serves the website; Supabase provides PostgreSQL, authentication, and private media storage. Posts live in the database, so adding/editing/deleting/scheduling posts never requires editing GitHub or rebuilding the site.
 
@@ -66,7 +66,7 @@ If using Git locally:
 ```sh
 git init
 git add .
-git commit -m "Create Inkstone blog"
+git commit -m "Create TS Writes blog"
 git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
 git push -u origin main
@@ -173,3 +173,8 @@ In the studio sidebar, **Categories** lets you create and rename your own catego
 **Appearance** offers ten fonts, separate headline/body choices, live previews, and a default light/dark theme. Save to apply changes to readers; already-open pages refresh settings within 30 seconds. The sun/moon toggle saves each reader's theme preference in their browser. No GitHub edits are needed for any of these controls.
 
 For an existing deployment, apply only `supabase/changes/custom_categories_and_appearance.sql` once. The production project already has this upgrade. The base `schema.sql` followed by the upgrade sets up a fresh deployment. Existing posts and categories are preserved.
+
+
+## TS Writes identity
+
+The reusable `Brand` component renders the code-chevron/pen-nib SVG in the journal and studio. Metadata and favicon use TS Writes. The orbit rotates gently and reveals the total published-blog count when hovered, keyboard-focused, or tapped. Reduced-motion preferences disable rotation and transitions. The domain link in the footer replaces the old studio shortcut; administration remains at `/#/admin`.

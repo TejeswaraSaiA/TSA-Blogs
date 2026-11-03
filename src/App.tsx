@@ -5,7 +5,6 @@ import {
   Search,
   X,
   Feather,
-  LockKeyhole,
   BookOpen,
   RefreshCw,
   Folder,
@@ -15,6 +14,8 @@ import { type Post } from "./lib/types";
 import { configured } from "./lib/supabase";
 import { Cover, DateLabel } from "./components/StoryMedia";
 import { useJournal, ThemeToggle } from "./components/JournalProvider";
+import { Brand, BrandIcon } from "./components/Brand";
+import { Orbit } from "./components/Orbit";
 const Reader = lazy(() => import("./components/Reader"));
 const Admin = lazy(() => import("./components/Admin"));
 function useRoute() {
@@ -65,10 +66,22 @@ export default function App() {
   useEffect(() => {
     const p = posts.find((p) => route === `/post/${p.slug}`);
     document.title = p
-      ? `${p.title} — Inkstone`
+      ? `${p.title} — TS Writes`
       : route.startsWith("/admin")
-        ? "Writer’s studio — Inkstone"
-        : "Inkstone — A journal of ideas";
+        ? "Writer’s studio — TS Writes"
+        : "TS Writes — Tech, trends, and the rhythm of daily life.";
+    const description =
+      p?.excerpt ||
+      "Exploring emerging technology, modern tools, and practical insights. Breaking down complex tech into simple, real-world knowledge for everyday life.";
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute("content", description);
+    document
+      .querySelector('meta[property="og:title"]')
+      ?.setAttribute("content", document.title);
+    document
+      .querySelector('meta[property="og:description"]')
+      ?.setAttribute("content", description);
   }, [route, posts]);
   if (route.startsWith("/admin"))
     return (
@@ -94,12 +107,7 @@ export default function App() {
   return (
     <>
       <header className="site-header">
-        <a href="#/" className="wordmark">
-          <span className="brand-icon">
-            <Feather size={20} />
-          </span>
-          inkstone<span className="brand-period">.</span>
-        </a>
+        <Brand />
         <nav aria-label="Main navigation">
           <a href="#/" className={!selected ? "nav-active" : ""}>
             Journal
@@ -161,32 +169,19 @@ export default function App() {
         <main>
           <section className="journal-hero">
             <div className="hero-coordinate">
-              INDEPENDENT THOUGHT / OPEN POSSIBILITIES
+              TECHNOLOGY / TRENDS / EVERYDAY LIFE
             </div>
-            <div className="orbital-art" aria-hidden="true">
-              <div className="orbital-halo" />
-              <div className="orbital-sphere" />
-              <div className="orbital-ring ring-one" />
-              <div className="orbital-ring ring-two" />
-              <div className="orbital-ring ring-three" />
-              <span className="orbit-point point-one" />
-              <span className="orbit-point point-two" />
-              <div className="orbital-caption">
-                THOUGHTS IN ORBIT <span>001 — ∞</span>
-              </div>
-            </div>
+            <Orbit count={posts.length} />
             <div className="hero-label">
-              <span /> A PERSONAL JOURNAL
+              <span /> PERSPECTIVES &amp; TECH
             </div>
             <h1>
-              A curious mind.
-              <br />
-              <em>An open universe.</em>
+              Tech, trends, and the <em>rhythm of daily life.</em>
             </h1>
             <p>
-              Thoughts on technology, growth, and the things in between.
-              <br />A little curiosity. A fresh perspective. One story at a
-              time.
+              Exploring emerging technology, modern tools, and practical
+              insights. Breaking down complex tech into simple, real-world
+              knowledge for everyday life.
             </p>
             <div className="hero-signature">
               <span className="signature-line" /> Written by Tejeswara Sai
@@ -312,26 +307,26 @@ export default function App() {
             )}
           </section>
           <section className="closing-note">
-            <Feather size={25} />
+            <BrandIcon />
+            <h2>Curious about what's next in tech?</h2>
             <p>
-              A space for ideas.
-              <br />
-              <em>And a little room to grow.</em>
+              Sharing practical learnings, tech breakdowns, and personal
+              insights as the world evolves.
             </p>
-            <span>Always curious. Always a work in progress.</span>
           </section>
         </main>
       )}
       <footer className="site-footer">
         <div>
-          <a className="footer-logo" href="#/">
-            inkstone.
-          </a>
-          <span>© {new Date().getFullYear()} Tejeswara Sai</span>
+          <Brand footer />
+          <span>
+            © 2026 Tejeswara Sai |{" "}
+            <a href="https://tejeswarasaia.tech">tejeswarasaia.tech</a>
+          </span>
         </div>
-        <span>Made of thoughts, not noise.</span>
-        <a className="studio-link" href="#/admin">
-          <LockKeyhole size={13} /> Writer’s studio
+        <span>Built for learning, sharing, and exploring.</span>
+        <a className="studio-link" href="https://tejeswarasaia.tech">
+          tejeswarasaia.tech <ArrowUpRight size={13} />
         </a>
       </footer>
       {about && (

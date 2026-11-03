@@ -60,6 +60,7 @@ import {
   videoUrl,
   type Post,
 } from "../lib/types";
+import { Brand, BrandIcon } from "./Brand";
 import StudioSettings from "./StudioSettings";
 import { useJournal, ThemeToggle } from "./JournalProvider";
 import { categoryName } from "../lib/preferences";
@@ -175,7 +176,7 @@ export default function Admin() {
         </a>
         <div className="login-card">
           <span className="login-brand">
-            <Feather size={24} />
+            <BrandIcon />
           </span>
           <span className="eyebrow">A LITTLE SPACE TO CREATE</span>
           <h1>Your writer’s studio.</h1>
@@ -262,12 +263,7 @@ export default function Admin() {
   return (
     <div className="studio-shell">
       <aside className="studio-sidebar">
-        <a className="wordmark" href="#/admin">
-          <span className="brand-icon">
-            <Feather size={20} />
-          </span>
-          inkstone<span className="brand-period">.</span>
-        </a>
+        <Brand />
         <div className="studio-caption">WRITER’S STUDIO</div>
         <nav aria-label="Studio navigation">
           {[
