@@ -14,7 +14,7 @@ A React + TypeScript blog with a separate administrator workspace. GitHub Pages 
 
 ## Current delivery status
 
-The source builds and runs in sample mode without any accounts. The TSA-Blogs Supabase database and private media storage are configured. Public browser configuration is in `.env.production`. The GitHub source repository is connected. Your administrator account and custom-domain DNS still need setup. The sample studio deliberately cannot save, delete, or publish. No production credentials or hardcoded passwords are included. Source repository: https://github.com/TejeswaraSaiA/TSA-Blogs.
+The source builds and runs in sample mode without any accounts. The TSA-Blogs Supabase database and private media storage are configured. Public browser configuration is in `.env.production`. The GitHub source repository is connected. Your administrator account is configured. GitHub Pages publication and custom-domain DNS remain to be verified. The sample studio deliberately cannot save, delete, or publish. No production credentials or hardcoded passwords are included. Source repository: https://github.com/TejeswaraSaiA/TSA-Blogs.
 
 ## 1. Run the preview locally
 
@@ -163,4 +163,4 @@ The design uses optional Google Fonts with local system fallbacks; YouTube/Vimeo
 
 ## TSA deployment status
 
-Supabase project: `iajjgwxnxtvzdwohnqce` (US East). Public site hostname requested: `tejeswarasaia.tech`. The public API key in `.env.production` is intentionally visible; no secret or service-role key is committed. Create your user in Supabase Authentication, then grant its UUID administrator membership. In GitHub Settings → Pages, choose GitHub Actions as source and rerun deployment. Set `BASE_PATH=/` when adding the custom domain.
+Supabase project: `iajjgwxnxtvzdwohnqce` (US East). Public site hostname requested: `tejeswarasaia.tech`. The public API key in `.env.production` is intentionally visible; no secret or service-role key is committed. The owner’s confirmed user has administrator membership. Sign in through the writer’s studio with the password created in Supabase. In GitHub Settings → Pages, choose GitHub Actions as source and rerun deployment. Set `BASE_PATH=/` when adding the custom domain.
