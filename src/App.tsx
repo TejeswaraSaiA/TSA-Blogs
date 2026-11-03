@@ -8,11 +8,13 @@ import {
   LockKeyhole,
   BookOpen,
   RefreshCw,
+  Folder,
 } from "lucide-react";
 import { getPosts } from "./lib/api";
-import { categories, type Post } from "./lib/types";
+import { type Post } from "./lib/types";
 import { configured } from "./lib/supabase";
 import { Cover, DateLabel } from "./components/StoryMedia";
+import { useJournal, ThemeToggle } from "./components/JournalProvider";
 const Reader = lazy(() => import("./components/Reader"));
 const Admin = lazy(() => import("./components/Admin"));
 function useRoute() {
@@ -29,6 +31,11 @@ function useRoute() {
 }
 export default function App() {
   const route = useRoute();
+  const { categories: customCategories } = useJournal();
+  const categories = [
+    "All stories",
+    ...customCategories.filter((c) => c !== "Uncategorized"),
+  ];
   const [posts, setPosts] = useState<Post[]>([]),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
@@ -36,6 +43,10 @@ export default function App() {
     [query, setQuery] = useState(""),
     [searchOpen, setSearchOpen] = useState(false),
     [about, setAbout] = useState(false);
+  useEffect(() => {
+    if (category !== "All stories" && !customCategories.includes(category))
+      setCategory("All stories");
+  }, [customCategories, category]);
   async function load() {
     try {
       setError("");
@@ -65,6 +76,8 @@ export default function App() {
         <Admin />
       </Suspense>
     );
+  if (posts.some((p) => p.category === "Uncategorized"))
+    categories.push("Uncategorized");
   const filtered = posts.filter(
     (p) =>
       (category === "All stories" || p.category === category) &&
@@ -92,6 +105,7 @@ export default function App() {
             Journal
           </a>
           <button onClick={() => setAbout(true)}>About</button>
+          <ThemeToggle />
           <button
             aria-label="Search stories"
             className="icon-button"
@@ -146,11 +160,28 @@ export default function App() {
       ) : (
         <main>
           <section className="journal-hero">
+            <div className="hero-coordinate">
+              INDEPENDENT THOUGHT / OPEN POSSIBILITIES
+            </div>
+            <div className="orbital-art" aria-hidden="true">
+              <div className="orbital-halo" />
+              <div className="orbital-sphere" />
+              <div className="orbital-ring ring-one" />
+              <div className="orbital-ring ring-two" />
+              <div className="orbital-ring ring-three" />
+              <span className="orbit-point point-one" />
+              <span className="orbit-point point-two" />
+              <div className="orbital-caption">
+                THOUGHTS IN ORBIT <span>001 — ∞</span>
+              </div>
+            </div>
             <div className="hero-label">
               <span /> A PERSONAL JOURNAL
             </div>
             <h1>
-              Ideas worth <em>slowing down</em> for.
+              A curious mind.
+              <br />
+              <em>An open universe.</em>
             </h1>
             <p>
               Thoughts on technology, growth, and the things in between.
@@ -170,7 +201,12 @@ export default function App() {
                     className={category === c ? "selected" : ""}
                     onClick={() => setCategory(c)}
                   >
-                    {c}
+                    {c !== "All stories" && <Folder size={13} />} {c}
+                    <span className="category-count">
+                      {c === "All stories"
+                        ? posts.length
+                        : posts.filter((p) => p.category === c).length}
+                    </span>
                   </button>
                 ))}
               </div>

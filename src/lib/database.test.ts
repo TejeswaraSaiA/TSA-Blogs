@@ -33,6 +33,15 @@ insert into auth.users values ('${admin}'),('${reader}');
   await db.exec(
     readFileSync(new URL("../../supabase/schema.sql", import.meta.url), "utf8"),
   );
+  await db.exec(
+    readFileSync(
+      new URL(
+        "../../supabase/changes/custom_categories_and_appearance.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
   await db.exec(`insert into public.admin_users values ('${admin}');
 insert into public.posts(id,title,slug,status,published_at,cover_path,content) values
 ('${live}','Live','live','published',now()-interval '1 day','${live}/cover.png','{"type":"doc","content":[{"type":"image","attrs":{"storagePath":"${live}/inline.png"}}]}'),
@@ -115,5 +124,60 @@ describe("Postgres authorization boundary", () => {
         )
       ).rows,
     ).toHaveLength(1);
+  });
+});
+
+describe("custom collections and appearance", () => {
+  it("renames categories across posts and preserves stories when deleting a category", async () => {
+    await as("authenticated", admin);
+    await db.exec(
+      `insert into public.categories(name) values ('Research'); update public.posts set category='Research' where id='${draft}'; update public.categories set name='Field notes' where name='Research';`,
+    );
+    expect(
+      (await db.query(`select category from public.posts where id='${draft}'`))
+        .rows,
+    ).toEqual([{ category: "Field notes" }]);
+    await db.exec("delete from public.categories where name='Field notes'");
+    expect(
+      (await db.query(`select category from public.posts where id='${draft}'`))
+        .rows,
+    ).toEqual([{ category: "Uncategorized" }]);
+    expect(
+      (
+        await db.query(
+          "delete from public.categories where name='Uncategorized' returning name",
+        )
+      ).rows,
+    ).toHaveLength(0);
+  });
+  it("allows only admins to change taxonomy or global typography", async () => {
+    await as("authenticated", reader);
+    await expect(
+      db.exec("insert into public.categories(name) values ('Hacked')"),
+    ).rejects.toThrow();
+    expect(
+      (
+        await db.query(
+          "update public.site_settings set heading_font='mono' returning id",
+        )
+      ).rows,
+    ).toHaveLength(0);
+    await as("authenticated", admin);
+    await db.exec(
+      "update public.site_settings set heading_font='space',body_font='lora',default_theme='light'",
+    );
+    await as("anon");
+    expect(
+      (
+        await db.query(
+          "select heading_font,body_font,default_theme from public.site_settings",
+        )
+      ).rows,
+    ).toEqual([
+      { heading_font: "space", body_font: "lora", default_theme: "light" },
+    ]);
+    await expect(
+      db.exec("update public.site_settings set default_theme='dark'"),
+    ).rejects.toThrow();
   });
 });

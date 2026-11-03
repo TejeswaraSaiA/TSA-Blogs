@@ -36,9 +36,12 @@ import {
   ArrowUpRight,
   LockKeyhole,
   AlertCircle,
+  Folder,
+  Palette,
 } from "lucide-react";
 import { supabase, configured } from "../lib/supabase";
 import {
+  createCategory,
   deletePost,
   getPosts,
   hydrateContent,
@@ -47,7 +50,6 @@ import {
   uploadMedia,
 } from "../lib/api";
 import {
-  categories,
   cleanContent,
   localDatetime,
   newPost,
@@ -58,6 +60,9 @@ import {
   videoUrl,
   type Post,
 } from "../lib/types";
+import StudioSettings from "./StudioSettings";
+import { useJournal, ThemeToggle } from "./JournalProvider";
+import { categoryName } from "../lib/preferences";
 import { extensions } from "./RichContent";
 function errorText(e: unknown) {
   return e instanceof Error
@@ -67,6 +72,10 @@ function errorText(e: unknown) {
       : "Something went wrong. Please try again.";
 }
 export default function Admin() {
+  const { categories } = useJournal();
+  const [panel, setPanel] = useState<"posts" | "categories" | "appearance">(
+    "posts",
+  );
   const [session, setSession] = useState<Session | null>(null),
     [authorized, setAuthorized] = useState(false),
     [checking, setChecking] = useState(configured),
@@ -158,6 +167,9 @@ export default function Admin() {
   if (!authorized && !demo)
     return (
       <div className="login-shell">
+        <div className="login-theme">
+          <ThemeToggle />
+        </div>
         <a href="#/" className="back-link">
           <ArrowLeft size={16} /> Back to journal
         </a>
@@ -268,7 +280,7 @@ export default function Admin() {
             return (
               <button
                 key={String(name)}
-                className={filter === name ? "active" : ""}
+                className={panel === "posts" && filter === name ? "active" : ""}
                 onClick={() => {
                   if (
                     editing &&
@@ -279,6 +291,7 @@ export default function Admin() {
                     return;
                   setEditing(null);
                   setFilter(String(name));
+                  setPanel("posts");
                 }}
               >
                 <I size={18} />
@@ -289,6 +302,32 @@ export default function Admin() {
               </button>
             );
           })}
+          <div className="nav-section-label">PERSONALIZE</div>
+          {(
+            [
+              ["categories", "Categories", Folder],
+              ["appearance", "Appearance", Palette],
+            ] as const
+          ).map(([id, label, Icon]) => (
+            <button
+              key={id}
+              className={panel === id ? "active" : ""}
+              onClick={() => {
+                if (
+                  editing &&
+                  !window.confirm(
+                    "Leave the editor? Unsaved changes will be lost.",
+                  )
+                )
+                  return;
+                setEditing(null);
+                setPanel(id);
+              }}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </button>
+          ))}
         </nav>
         <div className="sidebar-bottom">
           <a href="#/" target="_blank" rel="noreferrer">
@@ -316,6 +355,7 @@ export default function Admin() {
             <PanelLeft size={17} />{" "}
             {editing ? "Story editor" : "Your journal, behind the scenes"}
           </span>
+          <ThemeToggle />
           <a href="#/">
             Back to journal <ArrowUpRight size={15} />
           </a>
@@ -340,7 +380,14 @@ export default function Admin() {
             </button>
           </div>
         )}
-        {editing ? (
+        {panel !== "posts" ? (
+          <StudioSettings
+            panel={panel}
+            posts={posts}
+            demo={demo}
+            onChanged={load}
+          />
+        ) : editing ? (
           <PostEditor
             key={editing.id}
             post={editing}
@@ -559,6 +606,8 @@ function PostEditor({
   onClose: () => void;
   onSaved: (p: Post, message: string) => void;
 }) {
+  const { categories, reload } = useJournal();
+  const [newCategory, setNewCategory] = useState("");
   const [value, setValue] = useState(post),
     [dirty, setDirty] = useState(false),
     [busy, setBusy] = useState(false),
@@ -937,11 +986,51 @@ function PostEditor({
               disabled={busy || preview}
               onChange={(e) => update("category", e.target.value)}
             >
-              {categories.slice(1).map((c) => (
+              {categories.map((c) => (
                 <option key={c}>{c}</option>
               ))}
             </select>
           </label>
+          {!preview && (
+            <form
+              className="inline-category-create"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (demo) return;
+                setBusy(true);
+                setError("");
+                try {
+                  const name = categoryName(newCategory);
+                  await createCategory(name);
+                  await reload();
+                  update("category", name);
+                  setNewCategory("");
+                } catch (e) {
+                  setError(errorText(e));
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              <label>
+                <span className="sr-only">New category in editor</span>
+                <input
+                  placeholder="New category…"
+                  aria-label="New category in editor"
+                  maxLength={60}
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                />
+              </label>
+              <button
+                className="icon-button"
+                aria-label="Create category in editor"
+                disabled={demo || busy || !newCategory.trim()}
+              >
+                <Plus size={16} />
+              </button>
+            </form>
+          )}
           <label>
             Story URL
             <input

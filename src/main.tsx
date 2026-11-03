@@ -1,9 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { JournalProvider } from "./components/JournalProvider";
 import "./styles.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <JournalProvider>
+      <App />
+    </JournalProvider>
   </React.StrictMode>,
 );

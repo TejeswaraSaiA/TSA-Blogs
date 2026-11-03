@@ -1,3 +1,8 @@
+import {
+  categoryName,
+  defaultSettings,
+  type SiteSettings,
+} from "./preferences";
 import type { JSONContent } from "@tiptap/react";
 import { supabase } from "./supabase";
 import { demoPosts } from "./demo";
@@ -82,4 +87,60 @@ export async function hydrateContent(
   }
   await walk(copy);
   return copy;
+}
+
+// Category names cascade to posts on rename; deletion moves posts to Uncategorized.
+export async function getCategories(): Promise<string[]> {
+  if (!supabase)
+    return ["Uncategorized", ...new Set(demoPosts.map((p) => p.category))];
+  const { data, error } = await supabase
+    .from("categories")
+    .select("name")
+    .order("created_at");
+  if (error) throw error;
+  return (data || []).map((c) => c.name);
+}
+export async function createCategory(name: string) {
+  if (!supabase) throw Error("Connect Supabase to manage categories.");
+  const { error } = await supabase
+    .from("categories")
+    .insert({ name: categoryName(name) });
+  if (error) throw error;
+}
+export async function renameCategory(oldName: string, newName: string) {
+  if (!supabase) throw Error("Backend not configured.");
+  const { data, error } = await supabase
+    .from("categories")
+    .update({ name: categoryName(newName) })
+    .eq("name", oldName)
+    .select("name")
+    .single();
+  if (error) throw error;
+  return data;
+}
+export async function removeCategory(name: string) {
+  if (!supabase) throw Error("Backend not configured.");
+  const { error } = await supabase.from("categories").delete().eq("name", name);
+  if (error) throw error;
+}
+export async function getSettings(): Promise<SiteSettings> {
+  if (!supabase) return defaultSettings;
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("*")
+    .eq("id", true)
+    .single();
+  if (error) throw error;
+  return data as SiteSettings;
+}
+export async function saveSettings(settings: SiteSettings) {
+  if (!supabase) throw Error("Connect Supabase to save appearance.");
+  const { data, error } = await supabase
+    .from("site_settings")
+    .update(settings)
+    .eq("id", true)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as SiteSettings;
 }

@@ -22,13 +22,6 @@ export function uuid(): string {
   const h = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
-export const categories = [
-  "All stories",
-  "Technology",
-  "Data & AI",
-  "Personal growth",
-  "Life & ideas",
-];
 export function newPost(): Post {
   const time = new Date().toISOString();
   return {
@@ -36,7 +29,7 @@ export function newPost(): Post {
     title: "",
     slug: "",
     excerpt: "",
-    category: "Technology",
+    category: "Uncategorized",
     content: { type: "doc", content: [{ type: "paragraph" }] },
     cover_path: null,
     cover_alt: "",

@@ -10,11 +10,11 @@ A React + TypeScript blog with a separate administrator workspace. GitHub Pages 
 - Image covers, alt descriptions, excerpts, categories, authors, editable URL slugs, and article previews.
 - Drafts, publish now, schedule later, unpublish by saving as draft, and permanent post deletion.
 - Private upload bucket. Only admins can upload; visitors can read only media referenced by a published, due post.
-- GitHub Actions deployment, reproducible lockfile, and eight automated application/database permission tests.
+- GitHub Actions deployment, reproducible lockfile, and ten automated application/database permission tests.
 
 ## Current delivery status
 
-The source builds and runs in sample mode without any accounts. The TSA-Blogs Supabase database and private media storage are configured. Public browser configuration is in `.env.production`. The GitHub source repository is connected. Your administrator account is configured. GitHub Pages publication and custom-domain DNS remain to be verified. The sample studio deliberately cannot save, delete, or publish. No production credentials or hardcoded passwords are included. Source repository: https://github.com/TejeswaraSaiA/TSA-Blogs.
+The source builds and runs in sample mode without any accounts. The TSA-Blogs Supabase database and private media storage are configured. Public browser configuration is in `.env.production`. The GitHub source repository is connected. Your administrator account and custom-domain DNS still need setup. The sample studio deliberately cannot save, delete, or publish. No production credentials or hardcoded passwords are included. Source repository: https://github.com/TejeswaraSaiA/TSA-Blogs.
 
 ## 1. Run the preview locally
 
@@ -30,7 +30,7 @@ Open the URL printed by Vite. The public sample journal appears immediately. Cho
 ## 2. Set up your backend (one time)
 
 1. Create a Supabase project at https://supabase.com/dashboard. Keep the database password private.
-2. Open **SQL Editor**, paste the complete contents of `supabase/schema.sql`, and run it once. It creates the tables, helper functions, row-level security policies, and the private `blog-media` bucket. Do not run the initial schema twice.
+2. Open **SQL Editor**, paste the complete contents of `supabase/schema.sql`, and run it once. Then run `supabase/changes/custom_categories_and_appearance.sql` to add custom categories and appearance settings. It creates the tables, helper functions, row-level security policies, and the private `blog-media` bucket. Do not run the initial schema twice.
 3. In **Authentication → Providers → Email**, disable new user sign-ups. This app has no public sign-up page. Disable unused authentication providers as well.
 4. In **Authentication → Users**, add your own user with an email and a strong password, confirming it in the dashboard if required. Enter the password yourself; do not put it in source or send it in chat. Copy that user's UUID.
 5. Run the following in SQL Editor, replacing the placeholder with the actual UUID:
@@ -141,7 +141,7 @@ npm run build
 npm run preview
 ```
 
-The eight tests include a real embedded PostgreSQL engine (PGlite) running the exact schema, with test doubles for Supabase's auth/storage schemas. They check anonymous/non-admin/admin access, media references, due schedules, URL handling, and credential-free content persistence. Production Supabase login, uploads, storage API integration, GitHub Actions, and DNS still need an end-to-end check in your own accounts.
+The ten tests include a real embedded PostgreSQL engine (PGlite) running the exact schema, with test doubles for Supabase's auth/storage schemas. They check anonymous/non-admin/admin access, media references, due schedules, URL handling, and credential-free content persistence. Production Supabase login, uploads, storage API integration, GitHub Actions, and DNS still need an end-to-end check in your own accounts.
 
 This uses hash routes (`/#/post/story-slug`) so GitHub Pages can handle direct links without a server rewrite. It is a client-rendered blog; per-post social preview metadata, RSS, and server-rendered search-engine pages are not included. If those become priorities, migrate to prerendering/server rendering while retaining the database and admin workflow.
 
@@ -163,4 +163,13 @@ The design uses optional Google Fonts with local system fallbacks; YouTube/Vimeo
 
 ## TSA deployment status
 
-Supabase project: `iajjgwxnxtvzdwohnqce` (US East). Public site hostname requested: `tejeswarasaia.tech`. The public API key in `.env.production` is intentionally visible; no secret or service-role key is committed. The owner’s confirmed user has administrator membership. Sign in through the writer’s studio with the password created in Supabase. In GitHub Settings → Pages, choose GitHub Actions as source and rerun deployment. Set `BASE_PATH=/` when adding the custom domain.
+Supabase project: `iajjgwxnxtvzdwohnqce` (US East). Public site hostname requested: `tejeswarasaia.tech`. The public API key in `.env.production` is intentionally visible; no secret or service-role key is committed. Create your user in Supabase Authentication, then grant its UUID administrator membership. In GitHub Settings → Pages, choose GitHub Actions as source and rerun deployment. Set `BASE_PATH=/` when adding the custom domain.
+
+
+## Custom categories, fonts, and themes
+
+In the studio sidebar, **Categories** lets you create and rename your own categories. Rename updates all assigned stories. Removing a category safely moves its stories to the protected **Uncategorized** category. Categories are shared with the public journal immediately. You can also create a category directly in the story editor.
+
+**Appearance** offers ten fonts, separate headline/body choices, live previews, and a default light/dark theme. Save to apply changes to readers; already-open pages refresh settings within 30 seconds. The sun/moon toggle saves each reader's theme preference in their browser. No GitHub edits are needed for any of these controls.
+
+For an existing deployment, apply only `supabase/changes/custom_categories_and_appearance.sql` once. The production project already has this upgrade. The base `schema.sql` followed by the upgrade sets up a fresh deployment. Existing posts and categories are preserved.
