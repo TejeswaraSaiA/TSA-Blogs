@@ -14,7 +14,7 @@ A React + TypeScript blog with a separate administrator workspace. GitHub Pages 
 
 ## Current delivery status
 
-The source builds and runs in sample mode without any accounts. Backend credentials, an administrator account, your GitHub repository, and your domain have NOT been configured. The sample studio deliberately cannot save, delete, or publish. No production credentials or hardcoded passwords are included. Source repository: https://github.com/TejeswaraSaiA/TSA-Blogs.
+The source builds and runs in sample mode without any accounts. The TSA-Blogs Supabase database and private media storage are configured. Public browser configuration is in `.env.production`. The GitHub source repository is connected. Your administrator account and custom-domain DNS still need setup. The sample studio deliberately cannot save, delete, or publish. No production credentials or hardcoded passwords are included. Source repository: https://github.com/TejeswaraSaiA/TSA-Blogs.
 
 ## 1. Run the preview locally
 
@@ -58,7 +58,7 @@ The public key is designed to be visible in the built site. Database and storage
 
 3. Under **Settings → Pages**, set **Source** to **GitHub Actions**.
 4. Push the source to `main`, or run **Deploy journal to GitHub Pages** manually from Actions.
-5. The workflow installs locked dependencies, runs tests, builds, and publishes `dist/`. Until the two Supabase variables are configured it runs build checks only and skips deployment. If `BASE_PATH` is unset, it uses `/TSA-Blogs/`; set it to `/` when connecting your custom domain. Its deployment output contains the website URL.
+5. The workflow installs locked dependencies, runs tests, builds, and publishes `dist/`. The committed `.env.production` supplies the public Supabase settings; repository variables are optional overrides. Deployment waits until repository Pages is enabled with GitHub Actions as its source. If `BASE_PATH` is unset, it uses `/TSA-Blogs/`; set it to `/` when connecting your custom domain. Its deployment output contains the website URL.
 6. Sign in at `https://YOUR_DOMAIN/#/admin`. Post changes go directly to Supabase and appear for all readers; no GitHub commit is needed.
 
 If using Git locally:
@@ -159,3 +159,8 @@ The design uses optional Google Fonts with local system fallbacks; YouTube/Vimeo
 - `src/styles.css`: visual design and responsive layouts
 - `supabase/schema.sql`: production schema and server permissions
 - `.github/workflows/deploy.yml`: automatic build and Pages deployment
+
+
+## TSA deployment status
+
+Supabase project: `iajjgwxnxtvzdwohnqce` (US East). Public site hostname requested: `tejeswarasaia.tech`. The public API key in `.env.production` is intentionally visible; no secret or service-role key is committed. Create your user in Supabase Authentication, then grant its UUID administrator membership. In GitHub Settings → Pages, choose GitHub Actions as source and rerun deployment. Set `BASE_PATH=/` when adding the custom domain.

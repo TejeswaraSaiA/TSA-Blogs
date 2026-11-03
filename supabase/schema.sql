@@ -4,11 +4,22 @@ create table public.admin_users (
  user_id uuid primary key references auth.users(id) on delete cascade
 );
 alter table public.admin_users enable row level security;
+create policy "Admin membership is managed only through privileged tooling"
+ on public.admin_users for all to anon, authenticated using (false) with check (false);
 -- Admin membership cannot be edited through a browser, even by an admin.
 revoke all on public.admin_users from anon, authenticated;
-create or replace function public.is_admin() returns boolean
+create schema if not exists private;
+revoke all on schema private from public;
+grant usage on schema private to anon, authenticated;
+create or replace function private.is_admin() returns boolean
 language sql stable security definer set search_path = '' as $$
  select exists(select 1 from public.admin_users where user_id = auth.uid());
+$$;
+revoke all on function private.is_admin() from public;
+grant execute on function private.is_admin() to anon, authenticated;
+create function public.is_admin() returns boolean
+language sql stable security invoker set search_path = '' as $$
+ select private.is_admin();
 $$;
 revoke all on function public.is_admin() from public;
 grant execute on function public.is_admin() to anon, authenticated;
@@ -45,7 +56,7 @@ grant insert,update,delete on public.posts to authenticated;
 create policy "Visitors read only published and due stories" on public.posts
  for select to anon, authenticated using (status='published' and published_at<=now());
 create policy "Admins manage all stories" on public.posts
- for all to authenticated using (public.is_admin()) with check(public.is_admin());
+ for all to authenticated using ((select public.is_admin())) with check((select public.is_admin()));
 create or replace function public.touch_post() returns trigger
 language plpgsql set search_path = '' as $$ begin
  new.updated_at=now();
@@ -57,8 +68,8 @@ create trigger posts_timestamp before insert or update on public.posts for each 
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
 values('blog-media','blog-media',false,26214400,array['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/webm']);
 create policy "Admins manage blog media" on storage.objects for all to authenticated
- using(bucket_id='blog-media' and public.is_admin())
- with check(bucket_id='blog-media' and public.is_admin());
+ using(bucket_id='blog-media' and (select public.is_admin()))
+ with check(bucket_id='blog-media' and (select public.is_admin()));
 create policy "Visitors read media attached to a published due story" on storage.objects for select to anon, authenticated
  using(bucket_id='blog-media' and exists (
   select 1 from public.posts p where p.id::text=(storage.foldername(name))[1]

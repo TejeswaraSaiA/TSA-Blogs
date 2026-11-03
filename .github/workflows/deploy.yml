@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       backend_ready: ${{ steps.backend.outputs.ready }}
+      pages_ready: ${{ steps.pages.outputs.ready }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,7 +28,7 @@ jobs:
           PROJECT_URL: ${{ vars.VITE_SUPABASE_URL }}
           PUBLIC_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
         run: |
-          if [ -z "$PROJECT_URL" ] || [ -z "$PUBLIC_KEY" ]; then
+          if { [ -z "$PROJECT_URL" ] || [ -z "$PUBLIC_KEY" ]; } && [ ! -f .env.production ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "Build checks will run. Deployment waits for Supabase repository variables." >> "$GITHUB_STEP_SUMMARY"
           else
@@ -40,14 +41,30 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           BASE_PATH: ${{ vars.BASE_PATH || format('/{0}/', github.event.repository.name) }}
+      - name: Check GitHub Pages setup
+        id: pages
+        if: steps.backend.outputs.ready == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const response = await github.request('GET /repos/{owner}/{repo}/pages', context.repo);
+              const ready = response.data.build_type === 'workflow';
+              core.setOutput('ready', ready ? 'true' : 'false');
+              if (!ready) core.notice('Set repository Settings > Pages > Source to GitHub Actions, then rerun this workflow.');
+            } catch (error) {
+              if (![403, 404].includes(error.status)) throw error;
+              core.setOutput('ready', 'false');
+              core.notice('Enable repository Settings > Pages > Source: GitHub Actions, then rerun this workflow.');
+            }
       - uses: actions/configure-pages@v5
-        if: steps.backend.outputs.ready == 'true'
+        if: steps.pages.outputs.ready == 'true' 
       - uses: actions/upload-pages-artifact@v3
-        if: steps.backend.outputs.ready == 'true'
+        if: steps.pages.outputs.ready == 'true'
         with:
           path: dist
   deploy:
-    if: needs.build.outputs.backend_ready == 'true'
+    if: needs.build.outputs.backend_ready == 'true' && needs.build.outputs.pages_ready == 'true'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
