@@ -14,7 +14,7 @@ A React + TypeScript blog with a separate administrator workspace. GitHub Pages 
 
 ## Current delivery status
 
-The source builds and runs in sample mode without any accounts. The TSA-Blogs Supabase database and private media storage are configured. Public browser configuration is in `.env.production`. The GitHub source repository is connected. Your administrator account and custom-domain DNS still need setup. The sample studio deliberately cannot save, delete, or publish. No production credentials or hardcoded passwords are included. Source repository: https://github.com/TejeswaraSaiA/TSA-Blogs.
+The source builds and runs in sample mode without any accounts. The TSA-Blogs Supabase database and private media storage are configured. Public browser configuration is in `.env.production`. The GitHub source repository is connected. Your administrator account is configured; custom-domain DNS setup is pending. The sample studio deliberately cannot save, delete, or publish. No production credentials or hardcoded passwords are included. Source repository: https://github.com/TejeswaraSaiA/TSA-Blogs.
 
 ## 1. Run the preview locally
 
@@ -54,11 +54,10 @@ The public key is designed to be visible in the built site. Database and storage
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | `VITE_SUPABASE_URL`      | Your Supabase project URL                                                                                                      |
 | `VITE_SUPABASE_ANON_KEY` | Your publishable/anon key                                                                                                      |
-| `BASE_PATH`              | `/` for your custom domain or a `USERNAME.github.io` repository; `/REPOSITORY-NAME/` for a project URL without a custom domain |
 
 3. Under **Settings → Pages**, set **Source** to **GitHub Actions**.
 4. Push the source to `main`, or run **Deploy journal to GitHub Pages** manually from Actions.
-5. The workflow installs locked dependencies, runs tests, builds, and publishes `dist/`. The committed `.env.production` supplies the public Supabase settings; repository variables are optional overrides. Deployment waits until repository Pages is enabled with GitHub Actions as its source. If `BASE_PATH` is unset, it uses `/TSA-Blogs/`; set it to `/` when connecting your custom domain. Its deployment output contains the website URL.
+5. The workflow installs locked dependencies, runs tests, builds, and publishes `dist/`. The committed `.env.production` supplies the public Supabase settings; repository variables are optional overrides. Deployment waits until repository Pages is enabled with GitHub Actions as its source. The workflow uses relative asset paths, so it works on the GitHub project URL and the custom domain without a BASE_PATH variable. Its deployment output contains the website URL.
 6. Sign in at `https://YOUR_DOMAIN/#/admin`. Post changes go directly to Supabase and appear for all readers; no GitHub commit is needed.
 
 If using Git locally:
@@ -98,7 +97,7 @@ The CNAME target has no protocol, path, or repository name.
 | A    | @    | 185.199.111.153 |
 
 5. Preserve existing email/MX/TXT records. Replace only conflicting website-routing records. Avoid wildcard records. If the hostname already hosts a website, switching its DNS replaces the website reached there.
-6. Allow DNS/certificate provisioning time, then enable **Enforce HTTPS** in GitHub Pages. Set `BASE_PATH` to `/` and rerun the workflow if previously using a repository subpath.
+6. Allow DNS/certificate provisioning time, then enable **Enforce HTTPS** in GitHub Pages. No base-path change is needed.
 7. Update the Supabase Site URL to match the final HTTPS hostname.
 
 A `CNAME` source file is not needed with this custom GitHub Actions workflow; configure the domain in repository Pages settings.
@@ -163,7 +162,7 @@ The design uses optional Google Fonts with local system fallbacks; YouTube/Vimeo
 
 ## TSA deployment status
 
-Supabase project: `iajjgwxnxtvzdwohnqce` (US East). Public site hostname requested: `tejeswarasaia.tech`. The public API key in `.env.production` is intentionally visible; no secret or service-role key is committed. Create your user in Supabase Authentication, then grant its UUID administrator membership. In GitHub Settings → Pages, choose GitHub Actions as source and rerun deployment. Set `BASE_PATH=/` when adding the custom domain.
+Supabase project: `iajjgwxnxtvzdwohnqce` (US East). Public site hostname requested: `tejeswarasaia.tech`. The public API key in `.env.production` is intentionally visible; no secret or service-role key is committed. Your confirmed owner account already has administrator membership. In GitHub Settings → Pages, choose GitHub Actions as source and rerun deployment. Asset paths are already compatible with the custom domain.
 
 
 ## Custom categories, fonts, and themes
@@ -178,3 +177,18 @@ For an existing deployment, apply only `supabase/changes/custom_categories_and_a
 ## TS Writes identity
 
 The reusable `Brand` component renders the code-chevron/pen-nib SVG in the journal and studio. Metadata and favicon use TS Writes. The orbit rotates gently and reveals the total published-blog count when hovered, keyboard-focused, or tapped. Reduced-motion preferences disable rotation and transitions. The domain link in the footer replaces the old studio shortcut; administration remains at `/#/admin`.
+
+
+## Connecting tejeswarasaia.tech
+
+Save `tejeswarasaia.tech` in repository Settings → Pages → Custom domain **before** adding DNS records. At namify.get.tech, open this domain's DNS Management. Its current authoritative nameservers are ns1.dns.host through ns4.dns.host. Keep those nameservers and all existing iCloud email MX/TXT/CNAME records.
+
+| Type | Host | Value |
+|---|---|---|
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| CNAME | www | tejeswarasaia.github.io |
+
+Use the default TTL (or 3600). No apex A/AAAA records existed at the preflight check on November 3, 2026. Once GitHub's DNS check passes and its certificate is ready, enable Enforce HTTPS. DNS propagation and certificate issuance can take up to 24 hours. Do not add a source CNAME file for this GitHub Actions deployment.
