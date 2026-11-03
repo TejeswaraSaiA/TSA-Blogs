@@ -4490,3 +4490,116 @@ a:hover {
     width: 520px;
   }
 }
+/* One cohesive search field: focus belongs to the wrapper, not an inset input. */
+.search-bar {
+  width: calc(100% - 80px);
+  max-width: 1152px;
+  min-height: 58px;
+  margin: 22px auto 0;
+  padding: 6px 13px;
+  gap: 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--muted);
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+.search-bar:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--glow);
+}
+.search-bar > svg {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  margin-left: 3px;
+  pointer-events: none;
+}
+.search-bar > input,
+.search-bar > input:focus,
+.search-bar > input:focus-visible {
+  flex: 1 1 0%;
+  width: auto;
+  min-width: 0;
+  height: 44px;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search-bar > input::-webkit-search-cancel-button,
+.search-bar > input::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+.search-bar > .icon-button {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  color: var(--muted);
+  border-radius: 8px;
+}
+.search-bar > .icon-button:hover {
+  color: var(--ink);
+  background: var(--surface-3);
+}
+.twisted-studio {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 3px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.twisted-word {
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transform: skewX(-8deg);
+}
+.twisted-word > span {
+  display: inline-block;
+  transform: translateY(var(--letter-rise)) rotate(var(--letter-tilt));
+  transition: transform 0.25s;
+}
+.twisted-studio:hover .twisted-word > span,
+.twisted-studio:focus-visible .twisted-word > span {
+  transform: translateY(0) rotate(0);
+}
+.twisted-studio:hover,
+.twisted-studio:focus-visible {
+  color: var(--mint);
+}
+@media (max-width: 720px) {
+  .search-bar {
+    width: calc(100% - 44px);
+    margin: 17px 22px 0;
+    min-height: 54px;
+    padding: 5px 10px;
+    gap: 10px;
+  }
+  .search-bar > input {
+    font-size: 16px;
+    height: 42px;
+  }
+  .twisted-word {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .twisted-word > span,
+  .search-bar {
+    transition: none;
+  }
+}

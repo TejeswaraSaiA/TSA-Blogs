@@ -124,10 +124,11 @@ export default function App() {
         </nav>
       </header>
       {searchOpen && (
-        <div className="search-bar">
+        <div className="search-bar" role="search">
           <Search size={20} />
           <input
             autoFocus
+            type="search"
             aria-label="Search stories"
             placeholder="Find an idea, a topic, a story…"
             value={query}
@@ -325,8 +326,27 @@ export default function App() {
           </span>
         </div>
         <span>Built for learning, sharing, and exploring.</span>
-        <a className="studio-link" href="https://tejeswarasaia.tech">
-          tejeswarasaia.tech <ArrowUpRight size={13} />
+        <a
+          className="studio-link twisted-studio"
+          href="#/admin"
+          aria-label="Open admin panel — Writer’s Studio"
+        >
+          <span className="twisted-word" aria-hidden="true">
+            {Array.from("Writer’s Studio").map((letter, index) => (
+              <span
+                key={index}
+                style={
+                  {
+                    "--letter-tilt": `${index % 2 === 0 ? -7 : 6}deg`,
+                    "--letter-rise": `${index % 3 === 0 ? -1 : 1}px`,
+                  } as React.CSSProperties
+                }
+              >
+                {letter === " " ? "\u00a0" : letter}
+              </span>
+            ))}
+          </span>
+          <ArrowUpRight size={13} />
         </a>
       </footer>
       {about && (
