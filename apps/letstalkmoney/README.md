@@ -1,6 +1,6 @@
-# Fairshare
+# Let's Talk Money
 
-A React + TypeScript shared-expense app with a private, authenticated Cloudflare Worker backend. Fairshare has its own design and implementation; it does not use Splitwise branding or claim affiliation with Splitwise.
+A React + TypeScript shared-expense app with a private, authenticated Cloudflare Worker backend. Let's Talk Money has its own design and implementation; it does not use Splitwise branding or claim affiliation with Splitwise.
 
 ## Included workflows
 
@@ -54,3 +54,7 @@ The GitHub Pages frontend is built with `node scripts/build-pages.mjs` and serve
 Google setup: create a Web OAuth client in Google Cloud, with JavaScript origin `https://tejeswarasaia.tech` and redirect URI `https://iajjgwxnxtvzdwohnqce.supabase.co/auth/v1/callback`. Configure the client ID and secret in Supabase Authentication > Sign In / Providers > Google. Add `https://tejeswarasaia.tech/letstalkmoney/` to Auth URL Configuration redirect URLs; preserve the blog Site URL and existing redirect URLs. Publish the Google consent app for invited users beyond test users. Client secret must never be committed to GitHub.
 
 Group icons and banners are resized WebP images stored in private group documents. Owner-only settings support replace/remove and banner background color. Recurrence remains catch-up on workspace access.
+
+
+## Responsive branding update
+The current app name is Let's Talk Money. Custom SVG/ICO browser icons, an Apple touch icon, and a web manifest are copied from `public/` during the Pages build. On screens up to 650px, a fixed five-column bottom navigation includes safe-area spacing. Forms use 16px inputs to avoid iOS focus zoom, and dialogs fit narrow screens. Legacy browser preference keys are read for migration only.
