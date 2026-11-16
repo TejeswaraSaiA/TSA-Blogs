@@ -58,3 +58,8 @@ Group icons and banners are resized WebP images stored in private group document
 
 ## Responsive branding update
 The current app name is Let's Talk Money. Custom SVG/ICO browser icons, an Apple touch icon, and a web manifest are copied from `public/` during the Pages build. On screens up to 650px, a fixed five-column bottom navigation includes safe-area spacing. Forms use 16px inputs to avoid iOS focus zoom, and dialogs fit narrow screens. Legacy browser preference keys are read for migration only.
+
+
+## Group management
+Owners can assign Admin or Member roles in Group Settings. Existing participants without a role remain Members; the creator remains Owner. Every linked member can add, edit, or delete group expenses, while admins and owners manage settings, members, and invitations. Only the owner can assign roles or delete the group.
+Group deletion requires the exact current group name and a fresh revision. It soft-deletes the document, hides it from all workspaces, invalidates invitations, and blocks group and receipt access; it does not erase the underlying private document or uploaded receipt bytes.
