@@ -1,0 +1,17 @@
+import {createClient} from 'npm:@supabase/supabase-js@2.99.2';
+import worker from '../../../worker/index.ts';
+const origin='https://tejeswarasaia.tech';
+const headers={'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Vary':'Origin'};
+Deno.serve(async(req:Request)=>{if(req.method==='OPTIONS')return new Response(null,{status:204,headers});try{
+ const admin=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false,autoRefreshToken:false}});
+ const token=(req.headers.get('authorization')||'').replace(/^Bearer /,'');const {data:{user},error}=await admin.auth.getUser(token);
+ if(error||!user)return new Response(JSON.stringify({error:'Sign in with Google to continue.'}),{status:401,headers:{...headers,'Content-Type':'application/json'}});
+ const bucket={
+ async list({prefix,cursor}:{prefix:string;cursor?:string}){const offset=Number(cursor||0);const {data,error}=await admin.from('letstalkmoney_documents').select('key').like('key',prefix+'%').order('key').range(offset,offset+999);if(error)throw error;return {objects:data.map(x=>({key:x.key})),truncated:data.length===1000,cursor:String(offset+1000)}} ,
+ async get(key:string){if(key.startsWith('receipts/')){const {data,error}=await admin.storage.from('letstalkmoney-receipts').download(key);if(error)return null;return {body:data.stream(),httpMetadata:{contentType:data.type}}}const {data,error}=await admin.from('letstalkmoney_documents').select('value,etag').eq('key',key).maybeSingle();if(error)throw error;if(!data)return null;return {json:async()=>data.value,etag:data.etag}},
+ async put(key:string,value:any,options:any){if(key.startsWith('receipts/')){const buffer=await new Response(value).arrayBuffer();const {error}=await admin.storage.from('letstalkmoney-receipts').upload(key,buffer,{contentType:options.httpMetadata.contentType});if(error)throw error;return {key}}const etag=crypto.randomUUID(),row={key,value:JSON.parse(value),etag};if(options.onlyIf.etagMatches){const {data,error}=await admin.from('letstalkmoney_documents').update(row).eq('key',key).eq('etag',options.onlyIf.etagMatches).select('key');if(error)throw error;return data?.length?{etag}:null;}const {error}=await admin.from('letstalkmoney_documents').insert(row);if(error?.code==='23505')return null;if(error)throw error;return {etag}}
+ };
+ const url=new URL(req.url);const path=url.pathname.replace(/^.*\/letstalkmoney/,'');const h=new Headers(req.headers);h.delete('origin');h.set('oai-authenticated-user-id',user.id);h.set('oai-authenticated-user-email',user.email||'');h.set('oai-authenticated-user-full-name',encodeURIComponent(user.user_metadata?.full_name||user.email?.split('@')[0]||'You'));h.set('oai-authenticated-user-full-name-encoding','percent-encoded-utf-8');
+ const incoming=new Request(origin+'/api'+path+url.search,{method:req.method,headers:h,body:req.method==='GET'?undefined:await req.arrayBuffer()});
+ const response=await worker.fetch(incoming,{BUCKET:bucket as any});const out=new Headers(response.headers);for(const [k,v]of Object.entries(headers))out.set(k,v);return new Response(response.body,{status:response.status,headers:out});
+}catch(e){console.error('letstalkmoney request failed');return new Response(JSON.stringify({error:'Unable to process this request. Please retry.'}),{status:500,headers:{...headers,'Content-Type':'application/json'}})}});

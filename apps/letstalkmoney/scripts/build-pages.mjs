@@ -1,0 +1,4 @@
+import {build} from 'esbuild';import{mkdir,writeFile}from'node:fs/promises';
+await mkdir('dist/pages',{recursive:true});
+await build({entryPoints:['src/main.tsx'],bundle:true,outfile:'dist/pages/app.js',format:'esm',minify:true,target:'es2022',define:{'import.meta.env.DEV':'false','process.env.NODE_ENV':'"production"'}});
+await writeFile('dist/pages/index.html','<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#345f4c"><title>Fairshare — Let’s talk money</title><meta name="description" content="Good friends. Clear balances. Your private shared expense workspace."><link rel="stylesheet" href="./app.css"></head><body><div id="root"></div><script type="module" src="./app.js"></script></body></html>');

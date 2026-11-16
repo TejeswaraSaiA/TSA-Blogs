@@ -1,0 +1,10 @@
+node_modules/
+dist/
+outputs/
+.sites-runtime/
+.wrangler/
+.env*
+*.tsbuildinfo
+
+*.traineddata
+*.traineddata.gz

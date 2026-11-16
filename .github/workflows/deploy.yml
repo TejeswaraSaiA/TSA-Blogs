@@ -47,6 +47,15 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           BASE_PATH: './'
+      - name: Build Let's Talk Money
+        working-directory: apps/letstalkmoney
+        run: |
+          npm ci
+          npm test
+          npx tsc --noEmit
+          node scripts/build-pages.mjs
+          mkdir -p ../../dist/letstalkmoney
+          cp -R dist/pages/. ../../dist/letstalkmoney/
       - name: Check GitHub Pages setup
         id: pages
         if: steps.backend.outputs.ready == 'true'
