@@ -67,3 +67,7 @@ Group deletion requires the exact current group name and a fresh revision. It so
 
 ## Account profiles
 The profile button in the top bar and the desktop sidebar opens an editor for display name and profile picture. Pictures are resized client-side to WebP, and can be replaced or removed. The authenticated `/profile` endpoint writes only `profiles/{authenticated-user-id}.json` to the existing private document store; request-supplied IDs cannot select another account. Group responses resolve linked member names and avatars from these profiles, preserving member IDs, permissions, balances, and historical expense records. New creators and accepted invitees retain real names rather than a shared “You” label.
+
+
+## Personalized payment breakdown
+Overview shows the signed-in person's complete suggested payments and receivables across all groups, with separate totals for each currency. A group's breakdown includes a member selector to inspect each participant's position. Suggestions come from the existing cent-exact group debt simplification and reflect recorded settlements. Payments stay within their source group and currency. The Settle up shortcut is shown only when the viewer is the payer or group owner, matching server permissions; it records payments rather than transferring money.
