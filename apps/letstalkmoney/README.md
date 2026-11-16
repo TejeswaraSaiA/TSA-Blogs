@@ -63,3 +63,7 @@ The current app name is Let's Talk Money. Custom SVG/ICO browser icons, an Apple
 ## Group management
 Owners can assign Admin or Member roles in Group Settings. Existing participants without a role remain Members; the creator remains Owner. Every linked member can add, edit, or delete group expenses, while admins and owners manage settings, members, and invitations. Only the owner can assign roles or delete the group.
 Group deletion requires the exact current group name and a fresh revision. It soft-deletes the document, hides it from all workspaces, invalidates invitations, and blocks group and receipt access; it does not erase the underlying private document or uploaded receipt bytes.
+
+
+## Account profiles
+The profile button in the top bar and the desktop sidebar opens an editor for display name and profile picture. Pictures are resized client-side to WebP, and can be replaced or removed. The authenticated `/profile` endpoint writes only `profiles/{authenticated-user-id}.json` to the existing private document store; request-supplied IDs cannot select another account. Group responses resolve linked member names and avatars from these profiles, preserving member IDs, permissions, balances, and historical expense records. New creators and accepted invitees retain real names rather than a shared “You” label.
